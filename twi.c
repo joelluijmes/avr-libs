@@ -45,7 +45,6 @@ static uint8_t _state = CLOSED;
 
 TWRESULT twi_master_send(uint8_t slaveaddr, uint8_t* buffer, uint8_t len, uint8_t keepAlive)
 {
-	MASTER_INIT();
 	if (_state & CLOSED)
 	{
 		if(MT_START(slaveaddr) != TWST_OK)
@@ -145,9 +144,10 @@ TWRESULT twi_slave_receive(uint8_t slaveaddr, uint8_t* buffer, uint8_t* len)
 	return TWST_OK;
 }
 
-void twi_close()
+void twi_stop(uint8_t close)
 {
-	MASTER_STOP();
+	if (close)
+		MASTER_STOP();
 	_state |= CLOSED;
 }
 

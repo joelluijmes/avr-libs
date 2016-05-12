@@ -25,7 +25,7 @@ TWRESULT twi_master_send(uint8_t slaveaddr, uint8_t* buffer, uint8_t len, uint8_
 TWRESULT twi_slave_send(uint8_t slaveaddr, uint8_t* buffer, uint8_t* len);
 TWRESULT twi_master_receive(uint8_t slaveaddr, uint8_t* buffer, uint8_t len, uint8_t keepAlive);
 TWRESULT twi_slave_receive(uint8_t slaveaddr, uint8_t* buffer, uint8_t* len);
-void twi_close();
+void twi_stop(uint8_t close);
 uint8_t twi_slave_available();
 
 static inline TWRESULT twi_master_send_byte(uint8_t slaveaddr, uint8_t data, uint8_t keepAlive)
