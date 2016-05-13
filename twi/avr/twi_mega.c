@@ -23,12 +23,12 @@ static BOOL start_master()
 	return (TW_STATUS == TW_START || TW_STATUS == TW_REP_START);	// true if we got hold of the bus
 }
 
-void twi_master_init()
+void mega_master_init()
 {
 	init_clock();
 }
 
-TWRESULT twi_slave_init(uint8_t slave_addr)
+TWRESULT mega_slave_init(uint8_t slave_addr)
 {
 	init_clock();
 	
@@ -44,7 +44,7 @@ TWRESULT twi_slave_init(uint8_t slave_addr)
 	return TWST_SL_TRANSMITTING;
 }
 
-uint8_t twi_write(uint8_t data)
+uint8_t mega_write(uint8_t data)
 {
 	TWDR = data;										// set the data to transmit
 	TWCR = 1 << TWINT | 1 << TWEN;						// starts operation
@@ -53,12 +53,12 @@ uint8_t twi_write(uint8_t data)
 	return TWSR;		// & something
 }
 
-TWRESULT twi_mt_start(uint8_t slave_addr)
+TWRESULT mega_mt_start(uint8_t slave_addr)
 {
 	if (!start_master())								// if we can't get hold of the bus
 		return TWST_START_FAILED;						// we exit
 	
-	twi_write((slave_addr << 1) | TW_WRITE);			// say we're going to write to slave
+	mega_write((slave_addr << 1) | TW_WRITE);			// say we're going to write to slave
 	WAIT();
 
 	return (TW_STATUS == TW_MT_SLA_ACK)					// depending on we get an ack of the slave
@@ -66,12 +66,12 @@ TWRESULT twi_mt_start(uint8_t slave_addr)
 		: TWST_MASTER_NACK;								// FAILED
 }
 
-TWRESULT twi_mr_start(uint8_t slave_addr)
+TWRESULT mega_mr_start(uint8_t slave_addr)
 {
 	if (!start_master())								// if we can't get hold of the bus
 		return TWST_START_FAILED;						// we exit
 	
-	twi_write((slave_addr << 1) | TW_READ);				// say we're expect something of the slave
+	mega_write((slave_addr << 1) | TW_READ);				// say we're expect something of the slave
 	WAIT();
 
 	return (TW_STATUS == TW_MR_SLA_ACK)					// depending on we get an ack of the slave
@@ -79,7 +79,7 @@ TWRESULT twi_mr_start(uint8_t slave_addr)
 		: TWST_MASTER_NACK;								// FAILED
 }
 
-void twi_close()
+void mega_close()
 {
 	TWCR = 1 << TWINT | 1 << TWSTO | 1 << TWEN | 1 << TWEA;	// Releases the bus
 	//WAIT();												// Breaks it
@@ -87,7 +87,7 @@ void twi_close()
 	while (TWCR & (1 << TWSTO)) ;
 }
 
-uint8_t twi_read(uint8_t nack)
+uint8_t mega_read(uint8_t nack)
 {
 	TWCR = nack 
 		? 1 << TWINT | 1 << TWEN						// Enables TWI (Note: we don't send ack after op, thus nack)

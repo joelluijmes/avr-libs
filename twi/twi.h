@@ -22,6 +22,7 @@ typedef uint8_t TWRESULT;
 #define TWST_SLAVE_RECEIVE_FAILED 9
 #define TWST_SL_STOP 10
 
+void twi_master_init();
 TWRESULT twi_master_send(uint8_t slaveaddr, uint8_t* buffer, uint8_t len, uint8_t keepAlive); 
 TWRESULT twi_slave_send(uint8_t slaveaddr, uint8_t* buffer, uint8_t* len);
 TWRESULT twi_master_receive(uint8_t slaveaddr, uint8_t* buffer, uint8_t len, uint8_t keepAlive);

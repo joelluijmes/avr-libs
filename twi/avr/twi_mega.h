@@ -20,22 +20,22 @@
 #define SCL_CLOCK 800000L
 
 // Initializes as master
-void twi_master_init();
+void mega_master_init();
 
 // Initializes as slave with address 
-TWRESULT twi_slave_init(uint8_t slave_addr);
+TWRESULT mega_slave_init(uint8_t slave_addr);
 
 // Writes data to bus (note: should be in transmit mode)
-uint8_t twi_write(uint8_t data);
+uint8_t mega_write(uint8_t data);
 
 // Starts transmission mode (MASTER)
-TWRESULT twi_mt_start(uint8_t slave_addr);
+TWRESULT mega_mt_start(uint8_t slave_addr);
 
 // Starts receiver mode (MASTER)
-TWRESULT twi_mr_start(uint8_t slave_addr);
+TWRESULT mega_mr_start(uint8_t slave_addr);
 
 // Releases the bus (must be master)
-void twi_close();
+void mega_close();
 
 // Reads data from the bus (sends ACK)
-uint8_t twi_read(uint8_t nack);
+uint8_t mega_read(uint8_t nack);

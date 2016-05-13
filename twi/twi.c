@@ -8,14 +8,14 @@
 #if defined (__AVR_ATmega328P__) || defined (__AVR_ATmega328__)
 	#include "avr/twi_mega.h"
 
-	#define MASTER_INIT() (twi_master_init())
-	#define MT_START(slaveaddr) (twi_mt_start(slaveaddr))
-	#define MR_START(slaveaddr) (twi_mr_start(slaveaddr))
-	#define MASTER_WRITE(data) (twi_write(data))
-	#define MASTER_READ(nack) (twi_read(nack))
-	#define MASTER_STOP() (twi_stop(CLOSE))
+	#define MASTER_INIT() (mega_master_init())
+	#define MT_START(slaveaddr) (mega_mt_start(slaveaddr))
+	#define MR_START(slaveaddr) (mega_mr_start(slaveaddr))
+	#define MASTER_WRITE(data) (mega_write(data))
+	#define MASTER_READ(nack) (mega_read(nack))
+	#define MASTER_STOP() (mega_close())
 
-	#define SLAVE_INIT(slaveaddr) (twi_slave_init(slaveaddr))
+	#define SLAVE_INIT(slaveaddr) (mega_slave_init(slaveaddr))
 	#define SLAVE_WRITE(data) 0
 	#define SLAVE_READ(p_data) 0
 	#define SLAVE_IS_STOP() 0
@@ -43,13 +43,18 @@
 #define CLOSED (1 << 0)
 static uint8_t _state = CLOSED;
 
+void twi_master_init()
+{
+	MASTER_INIT();
+}
+
 TWRESULT twi_master_send(uint8_t slaveaddr, uint8_t* buffer, uint8_t len, uint8_t keepAlive)
 {
 	if (_state & CLOSED)
 	{
 		if(MT_START(slaveaddr) != TWST_OK)
 		{
-			MASTER_STOP();
+			twi_stop(CLOSE);
 			return TWST_START_FAILED; 
 		}
 
@@ -67,8 +72,7 @@ TWRESULT twi_master_send(uint8_t slaveaddr, uint8_t* buffer, uint8_t len, uint8_
 		}
 	}
 
-	if (!keepAlive)
-		twi_close();
+	twi_stop(keepAlive);
 
 	return (nacked)
 		? TWST_PARTIAL_TRANSMIT
@@ -104,7 +108,7 @@ TWRESULT twi_master_receive(uint8_t slaveaddr, uint8_t* buffer, uint8_t len, uin
 	{
 		if(MR_START(slaveaddr) != TWST_OK)
 		{
-			twi_close();
+			twi_stop(CLOSE);
 			return TWST_START_FAILED;
 		}
 
@@ -116,9 +120,7 @@ TWRESULT twi_master_receive(uint8_t slaveaddr, uint8_t* buffer, uint8_t len, uin
 
 	buffer[len - 1] = MASTER_READ(NACK); 
 
-	if (!keepAlive)
-		twi_close();
-
+	twi_stop(keepAlive);
 	return TWST_OK;
 }
 
