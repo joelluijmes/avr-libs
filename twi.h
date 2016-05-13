@@ -3,6 +3,7 @@
 
 #define CLOSE 0
 #define KEEP_ALIVE 1
+#define REP_START 1
 
 // Status codes of what this module will return
 typedef uint8_t TWRESULT;

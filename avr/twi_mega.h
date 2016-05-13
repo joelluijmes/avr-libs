@@ -35,7 +35,7 @@ TWRESULT twi_mt_start(uint8_t slave_addr);
 TWRESULT twi_mr_start(uint8_t slave_addr);
 
 // Releases the bus (must be master)
-void twi_stop();
+void twi_close();
 
 // Reads data from the bus (sends ACK)
 uint8_t twi_read(uint8_t nack);

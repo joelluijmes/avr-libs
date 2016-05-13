@@ -79,7 +79,7 @@ TWRESULT twi_mr_start(uint8_t slave_addr)
 		: TWST_MASTER_NACK;								// FAILED
 }
 
-void twi_stop()
+void twi_close()
 {
 	TWCR = 1 << TWINT | 1 << TWSTO | 1 << TWEN | 1 << TWEA;	// Releases the bus
 	//WAIT();												// Breaks it

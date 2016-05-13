@@ -13,7 +13,7 @@
 	#define MR_START(slaveaddr) (twi_mr_start(slaveaddr))
 	#define MASTER_WRITE(data) (twi_write(data))
 	#define MASTER_READ(nack) (twi_read(nack))
-	#define MASTER_STOP() (twi_stop())
+	#define MASTER_STOP() (twi_stop(CLOSE))
 
 	#define SLAVE_INIT(slaveaddr) (twi_slave_init(slaveaddr))
 	#define SLAVE_WRITE(data) 0
@@ -49,7 +49,7 @@ TWRESULT twi_master_send(uint8_t slaveaddr, uint8_t* buffer, uint8_t len, uint8_
 	{
 		if(MT_START(slaveaddr) != TWST_OK)
 		{
-			twi_close();
+			MASTER_STOP();
 			return TWST_START_FAILED; 
 		}
 
