@@ -1,6 +1,7 @@
 # avr-ssd1306
 Library for the ssd1306 for AVR however any twi enabled device will work. 
-This library uses [avr-twi](https://github.com/joelluijmes/avr-twi).
+This library uses [twi library from this repository]
+(https://github.com/joelluijmes/avr-libs/tree/master/twi).
 Note this library is based on the one from Adafruit but this is plain old
 C instead of C++.
 
