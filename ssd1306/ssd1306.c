@@ -8,7 +8,7 @@
 typedef int8_t SSD_COMMAND;
 
 static TWRESULT send_command(SSD_COMMAND command);
-static TWRESULT send_commands(SSD_COMMAND commands[], int8_t len);
+static SSD_RESULT send_commands(SSD_COMMAND commands[], int8_t len);
 
 static int8_t _buffer[BUF_BYTES];
 
@@ -86,7 +86,7 @@ SSD_RESULT ssd_update()
 				return SSD_TWI_ERROR;
 		}
 
-		twi_close();
+		twi_stop(CLOSE);
 	}
 
 	return SSD_OK;
@@ -111,7 +111,7 @@ uint8_t* ssd_get_buffer()
 
 static TWRESULT send_command(SSD_COMMAND command)
 {
-	int8_t buf[] = { 0x00, command };
+	uint8_t buf[] = { 0x00, command };
 	return twi_master_send(SSD1306_I2C_ADDRESS, buf, 2, CLOSE);
 }
 
