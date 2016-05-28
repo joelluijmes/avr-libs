@@ -17,7 +17,7 @@
 #include "../twi.h"
 
 // 100 kHz as clock
-#define SCL_CLOCK 800000L
+#define SCL_CLOCK 100000L
 
 // Initializes as master
 void mega_master_init();
