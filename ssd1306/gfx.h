@@ -10,12 +10,20 @@ typedef int8_t GFX_RESULT;
 #define GFX_DIVER_ERROR 2
 #define GFX_PARAM_ERROR 3
 
-typedef struct gfx_char_options gfx_char_options;
-struct gfx_char_options
+typedef union gfx_char gfx_char;
+union gfx_char
 {
-    int8_t color : 1;
-    int8_t size : 7;
-};
+    uint8_t value;
+    struct 
+    {
+        int8_t color : 1;
+        int8_t size : 7;
+    };
+} gfx_char_u;
+
+
+#define CHAR_X1 3
+#define CHAR_X2 5
 
 GFX_RESULT gfx_init();
 void gfx_pixel(int8_t x, int8_t y, int8_t on);
@@ -27,8 +35,8 @@ void gfx_angled_pixel(int8_t x, int8_t y, int16_t degrees, int8_t length, int8_t
 void gfx_rect(int8_t x, int8_t y, int8_t width, int8_t height, int8_t on);
 void gfx_fill_rect(int8_t x, int8_t y, int8_t width, int8_t height, int8_t on);
 void gfx_circle(int8_t x, int8_t y, int8_t radius, int8_t on);
-void gfx_char(int8_t x, int8_t y, char c, gfx_char_options options);
-void gfx_print(int8_t x, int8_t y, const char* text, gfx_char_options options);
+void gfx_print_char(int8_t x, int8_t y, char c, gfx_char options);
+void gfx_print_text(int8_t x, int8_t y, const char* text, gfx_char options);
 void gfx_bitmap(const uint8_t* data);
 void gfx_bitmap_progmem(const uint8_t* data);
 void gfx_clear();

@@ -256,15 +256,15 @@ void gfx_circle(int8_t x, int8_t y, int8_t radius, int8_t on)
     }
 }
 
-void gfx_char(int8_t x, int8_t y, char c, gfx_char_options options)
+void gfx_print_char(int8_t x, int8_t y, char c, gfx_char gfx)
 {
-    if ((uint8_t)(6*options.size) + x >= SSD1306_LCDWIDTH)
+    if ((uint8_t)(6*gfx.size) + x >= SSD1306_LCDWIDTH)
     {
         x = 0;
-        y += options.size*6;        
+        y += gfx.size*6;        
     }
     
-    if ((uint8_t)(8*options.size) + y >= SSD1306_LCDHEIGHT)
+    if ((uint8_t)(8*gfx.size) + y >= SSD1306_LCDHEIGHT)
         y = 0;
     
     if (c >= 176)
@@ -278,31 +278,31 @@ void gfx_char(int8_t x, int8_t y, char c, gfx_char_options options)
         
         for (int8_t yy = 0; yy < 8; ++yy, line >>= 1) 
         {
-            int8_t x1 = x + xx*options.size;
-            int8_t y1 = y + yy*options.size;
+            int8_t x1 = x + xx*gfx.size;
+            int8_t y1 = y + yy*gfx.size;
             
-            int8_t width = options.size;            
-            int8_t height = options.size;
+            int8_t width = gfx.size;            
+            int8_t height = gfx.size;
             
             if (line & 0x01)
             {
-                if (options.size == 1)
-                    gfx_pixel(x1, y1, options.color);
+                if (gfx.size == 1)
+                    gfx_pixel(x1, y1, gfx.color);
                 else
-                    gfx_fill_rect(x1, y1, width, height, options.color);
+                    gfx_fill_rect(x1, y1, width, height, gfx.color);
             }
             else
             {
-                if (options.size == 1)
-                    gfx_pixel(x1, y1, !options.color);
+                if (gfx.size == 1)
+                    gfx_pixel(x1, y1, !gfx.color);
                 else
-                    gfx_fill_rect(x1, y1, width, height, !options.color);
+                    gfx_fill_rect(x1, y1, width, height, !gfx.color);
             }
         }
     }
 }
 
-void gfx_print(int8_t x, int8_t y, const char* text, gfx_char_options options)
+void gfx_print_text(int8_t x, int8_t y, const char* text, gfx_char gfx)
 {
     const char* p = text;
     
@@ -310,7 +310,7 @@ void gfx_print(int8_t x, int8_t y, const char* text, gfx_char_options options)
     {
         if (*p == '\n')
         {
-            y += options.size*8;
+            y += gfx.size*8;
             x = 0;
         }
         else if (*p == '\r')
@@ -319,8 +319,8 @@ void gfx_print(int8_t x, int8_t y, const char* text, gfx_char_options options)
         }
         else  
         {
-            gfx_char(x, y, *p, options);
-            x += options.size*6;
+            gfx_print_char(x, y, *p, gfx);
+            x += gfx.size*6;
         }
         
         ++p;
