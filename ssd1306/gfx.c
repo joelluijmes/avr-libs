@@ -291,12 +291,12 @@ void gfx_char(int8_t x, int8_t y, char c, gfx_char_options options)
                 else
                     gfx_fill_rect(x1, y1, width, height, options.color);
             }
-            else if (options.color != options.background)
+            else
             {
                 if (options.size == 1)
-                    gfx_pixel(x1, y1, options.background);
+                    gfx_pixel(x1, y1, !options.color);
                 else
-                    gfx_fill_rect(x1, y1, width, height, options.background);
+                    gfx_fill_rect(x1, y1, width, height, !options.color);
             }
         }
     }

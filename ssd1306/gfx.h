@@ -14,8 +14,7 @@ typedef struct gfx_char_options gfx_char_options;
 struct gfx_char_options
 {
     int8_t color : 1;
-    int8_t background : 1;
-    int8_t size : 6;
+    int8_t size : 7;
 };
 
 GFX_RESULT gfx_init();
