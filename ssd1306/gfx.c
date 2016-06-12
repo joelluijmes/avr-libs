@@ -258,6 +258,15 @@ void gfx_circle(int8_t x, int8_t y, int8_t radius, int8_t on)
 
 void gfx_char(int8_t x, int8_t y, char c, gfx_char_options options)
 {
+    if ((uint8_t)(6*options.size) + x >= SSD1306_LCDWIDTH)
+    {
+        x = 0;
+        y += options.size*6;        
+    }
+    
+    if ((uint8_t)(8*options.size) + y >= SSD1306_LCDHEIGHT)
+        y = 0;
+    
     if (c >= 176)
         ++c;
         
@@ -270,23 +279,24 @@ void gfx_char(int8_t x, int8_t y, char c, gfx_char_options options)
         for (int8_t yy = 0; yy < 8; ++yy, line >>= 1) 
         {
             int8_t x1 = x + xx*options.size;
-            int8_t x2 = x1 + options.size;
             int8_t y1 = y + yy*options.size;
-            int8_t y2 = y1 + options.size;
+            
+            int8_t width = options.size;            
+            int8_t height = options.size;
             
             if (line & 0x01)
             {
                 if (options.size == 1)
                     gfx_pixel(x1, y1, options.color);
                 else
-                    gfx_fill_rect(x1, y1, x2, y2, options.color);
+                    gfx_fill_rect(x1, y1, width, height, options.color);
             }
             else if (options.color != options.background)
             {
                 if (options.size == 1)
                     gfx_pixel(x1, y1, options.background);
                 else
-                    gfx_fill_rect(x1, y1, x2, y2, options.background);
+                    gfx_fill_rect(x1, y1, width, height, options.background);
             }
         }
     }
@@ -309,12 +319,6 @@ void gfx_print(int8_t x, int8_t y, const char* text, gfx_char_options options)
         }
         else  
         {
-            if (x + options.size*6 >= SSD1306_LCDWIDTH)
-            {
-                x = 0;
-                y += options.size*8;
-            }
-            
             gfx_char(x, y, *p, options);
             x += options.size*6;
         }
