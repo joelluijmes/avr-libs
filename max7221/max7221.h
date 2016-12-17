@@ -18,27 +18,10 @@
 #define MAX7221_SHUTDOWN    12
 #define MAX7221_DISPLAYTEST 15
 
-#ifndef MAX7221_DEVICES
-    #define MAX7221_DEVICES 1
-#endif
-
-#ifndef MAX7221_DATA_PORT
-#error Please define 'MAX7221_DATA_PORT'
-#endif
-#ifndef MAX7221_DATA_MASK
-#error Please define 'MAX7221_DATA_MASK'
-#endif
-#ifndef MAX7221_CS_PORT
-#error Please define 'MAX7221_CS_PORT'
-#endif
-#ifndef MAX7221_CS_MASK
-#error Please define 'MAX7221_CS_MASK'
-#endif
-#ifndef MAX7221_SCK_PORT
-#error Please define 'MAX7221_SCK_PORT'
-#endif
-#ifndef MAX7221_SCK_MASK
-#error Please define 'MAX7221_SCK_MASK'
+// MAX7221_DISPLAYS sets how many displays are connected (SCANLIMIT)
+// Default set the displays to 8, override this value before calling max_init
+#ifndef MAX7221_DISPLAYS
+    #define MAX7221_DISPLAYS 8
 #endif
 
 void max7221_init(void);
