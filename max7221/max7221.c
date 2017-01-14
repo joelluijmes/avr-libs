@@ -1,66 +1,86 @@
 #include "max7221.h"
 #include <util/delay.h>
 
-#define DATA_HIGH() (MAX7221_DATA_PORT  |= MAX7221_DATA_MASK)
-#define DATA_LOW()  (MAX7221_DATA_PORT  &= ~MAX7221_DATA_MASK)
-#define CS_HIGH()   (MAX7221_CS_PORT    |= MAX7221_CS_MASK)
-#define CS_LOW()    (MAX7221_CS_PORT    &= ~MAX7221_CS_MASK)
-#define SCK_HIGH()  (MAX7221_SCK_PORT   |= MAX7221_SCK_MASK)
-#define SCK_LOW()   (MAX7221_SCK_PORT   &= ~MAX7221_SCK_MASK)
+#define DATA_ASSERT()   (MAX7221_DATA_PORT  |= MAX7221_DATA_MASK)
+#define DATA_DISABLE()  (MAX7221_DATA_PORT  &= ~MAX7221_DATA_MASK)
+#define CS_ASSERT()     (MAX7221_CS_PORT    &= ~MAX7221_CS_MASK)
+#define CS_DISABLE()    (MAX7221_CS_PORT    |= MAX7221_CS_MASK)
+#define SCK_ASSERT()    (MAX7221_SCK_PORT   |= MAX7221_SCK_MASK)
+#define SCK_DISABLE()   (MAX7221_SCK_PORT   &= ~MAX7221_SCK_MASK)
 
-#define KEEP_ALIVE  0
-#define CLOSE       1
-#define CLOSED      1
-
-static void spi_write(uint8_t* arr, uint8_t len, uint8_t close);
+static void spi_write(const uint8_t* const arr, uint8_t len);
 
 void max7221_init(void)
 {
-    CS_HIGH();
-    SCK_HIGH();
-    DATA_HIGH();
+    MAX7221_CS_DDR |= MAX7221_CS_MASK;
+    MAX7221_SCK_DDR |= MAX7221_SCK_MASK;
+    MAX7221_DATA_DDR |= MAX7221_DATA_MASK;
 
-    max7221_write(MAX7221_SCANLIMIT, MAX7221_DISPLAYS-1);
-    max7221_write(MAX7221_DECODEMODE, 0xFF);
-    max7221_write(MAX7221_SHUTDOWN, 1);
-    max7221_write(MAX7221_INTENSITY, 8);
+    CS_ASSERT();
+    SCK_ASSERT();
+    DATA_ASSERT();
+
+    for (uint8_t i = 0; i < MAX7221_DEVICES; ++i)
+    {
+        max7221_write(i, MAX7221_SCANLIMIT, 7);        // display 8 digits
+        max7221_write(i, MAX7221_DECODEMODE, 0);       // we use software decoding for characters
+        max7221_write(i, MAX7221_SHUTDOWN, 1);         // enable the chip
+        max7221_write(i, MAX7221_INTENSITY, 8);        // set intensity to 8 (0 - 15)
+    }
 }
 
-void max7221_write(uint8_t address, uint8_t data)
+void max7221_write(uint8_t device, uint8_t address, uint8_t data)
 {
+    // buffer for storing commands, the devices which aren't addressed get a NOP command
     uint8_t arr[MAX7221_DEVICES*2] = { 0 };
 
-    for (uint8_t i = 0; i < MAX7221_DEVICES; i += 2)
+    // store the command in the buffer
+    arr[device*2] = address;
+    arr[device*2 + 1] = data;
+
+    spi_write(arr, MAX7221_DEVICES*2);
+}
+
+void max7221_display(uint8_t device, uint8_t digit, uint8_t c)
+{
+    if (c >= '0' && c <= '9')
+        c -= '0';
+    else if (c >= 'a' && c <= 'z')
+        c -= 'a' - 10;
+    else if (c >= 'A' && c <= 'Z')
+        c -= 'A' - 10;
+    else if (c > 0x0F)
+        c = 0;
+
+    static const uint8_t table[] =
     {
-        arr[i] = address;
-        arr[i + 1] = data;
-    }
+        0x7E, 0x30, 0x6D, 0x79, 0x33, 0x5B, 0x5F, 0x70, 0x7F, 0x7B,         // 0 - 9
+        0x77, 0x1F, 0x4E, 0x3D, 0x4F, 0x47                                  // a - f
+    };
 
-    spi_write(arr, MAX7221_DEVICES*2, KEEP_ALIVE);
+    max7221_write(device, digit + 1, table[c]);
 }
 
-void max7221_display(uint8_t* numbers, uint8_t len)
+static void spi_write(const uint8_t* const arr, uint8_t len)
 {
-    for (uint8_t i = 0; i < len; ++i)
-        max7221_write(i + 1, numbers[i]);
-}
+    CS_ASSERT();
 
-static void spi_write(uint8_t* arr, uint8_t len, uint8_t close)
-{
     for (uint8_t i = 0; i < len; ++i)
     {
         for (int8_t j = 7; j >= 0; --j)        // MAX7221 SPI is MSB (Big endian)
         {
             if ((arr[i] & (1 << j)) != 0)
-                DATA_HIGH();
+                DATA_ASSERT();
             else
-                DATA_LOW();
+                DATA_DISABLE();
 
             _delay_us(100);
-            SCK_HIGH();
+            SCK_ASSERT();
             _delay_us(100);
-            SCK_LOW();
+            SCK_DISABLE();
             _delay_us(100);
         }
     }
+
+    CS_DISABLE();
 }

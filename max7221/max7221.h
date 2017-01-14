@@ -18,12 +18,10 @@
 #define MAX7221_SHUTDOWN    12
 #define MAX7221_DISPLAYTEST 15
 
-// MAX7221_DISPLAYS sets how many displays are connected (SCANLIMIT)
-// Default set the displays to 8, override this value before calling max_init
-#ifndef MAX7221_DISPLAYS
-    #define MAX7221_DISPLAYS 8
+#ifndef MAX7221_DEVICES
+    #define MAX7221_DEVICES 1
 #endif
 
 void max7221_init(void);
-void max7221_write(uint8_t address, uint8_t data);
-void max7221_display(uint8_t* numbers, uint8_t len);
+void max7221_write(uint8_t device, uint8_t address, uint8_t data);
+void max7221_display(uint8_t device, uint8_t digit, uint8_t c);
